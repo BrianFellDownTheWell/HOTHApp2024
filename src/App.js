@@ -39,6 +39,17 @@ export default function App() {
 	const taskTitle = useRef('');
 	const taskSummary = useRef('');
 
+	const emissions = {
+		"wb": 0.053,
+		"scooter": 0.24,
+		"bus": 0.64,
+		"car": 0.76
+	};
+
+	function calculateEmissions(vehicle,distance) {
+		return emissions[vehicle] * distance;
+	} 
+
 	function createTask() {
 		setTasks([
 			...tasks,
