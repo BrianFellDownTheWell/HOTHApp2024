@@ -106,15 +106,15 @@ export default function App() {
 						<TextInput
 							mt={'md'}
 							ref={taskTitle}
-							placeholder={'Task Title'}
+							placeholder={'Transportation Mode'}
 							required
-							label={'Title'}
+							label={'Transportation Mode'}
 						/>
 						<TextInput
 							ref={taskSummary}
 							mt={'md'}
-							placeholder={'Task Summary'}
-							label={'Summary'}
+							placeholder={'Distance'}
+							label={'Distance'}
 						/>
 						<Group mt={'md'} position={'apart'}>
 							<Button
