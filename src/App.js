@@ -12,8 +12,6 @@ import {
 } from '@mantine/core';
 import { useState, useRef, useEffect } from 'react';
 import { MoonStars, Sun, Trash } from 'tabler-icons-react';
-import Dropdown from 'react-bootstrap/Dropdown';
-
 import {
 	MantineProvider,
 	ColorSchemeProvider,
@@ -23,14 +21,19 @@ import { useColorScheme } from '@mantine/hooks';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
 let totalEmissions = 0;
+
+let curMode = "";
+let curDistance = 0;
 let curEmissions = 0;
 
 const emissions = {
-	"wb": 0.053,
-	"scooter": 0.24,
-	"bus": 0.64,
-	"car": 0.76
+	"wb": 0.05,
+	"scooter": 0.25,
+	"bus": 0.65,
+	"car": 0.75
 };
+
+let trips = {};
 
 function calculateEmissions(vehicle,distance) {
 	return emissions[vehicle] * distance;
@@ -58,21 +61,34 @@ export default function App() {
 
 	const tripDistance = useRef('');
 	const transportMode = useRef('');
+	const tripEmissions = useRef('');
 
-	function createTask() {
+	function createTask(curDistance,curMode,curEmissions) {
 		setTasks([
 			...tasks,
 			{
-				title: taskTitle.current.value,
-				summary: taskSummary.current.value,
+				tripDistance: curDistance,
+				transportMode: curMode,
+				tripEmissions: curEmissions,
+
+				title: "Trip - ",
+				emissionsSummary: "CO2 emissions: " + curEmissions + " lbs",
+				distanceSummary: "Distance travelled: " + curDistance + " miles", 
+				modeSummary: "Mode of Transport: " + curMode,
 			},
 		]);
 
 		saveTasks([
 			...tasks,
 			{
-				title: taskTitle.current.value,
-				summary: taskSummary.current.value,
+				tripDistance: curDistance,
+				transportMode: curMode,
+				tripEmissions: curEmissions,
+
+
+
+				title: "Trip - CO2 emissions: " + curEmissions + "Distance: " + curDistance + "Mode of Transport: " + curMode,
+				summary: "Distance: " + curDistance + "Mode of Transport: " + curMode,
 			},
 		]);
 	}
@@ -149,9 +165,14 @@ export default function App() {
 							</Button>
 							<Button
 								onClick={() => {
-									createTask();
+									let dropDown = document.getElementById("vehicles");
+									curDistance = document.getElementById("dTravelled").value;
+									curMode = dropDown.options[dropDown.selectedIndex].text;
+									curEmissions = calculateEmissions(dropDown.value,curDistance);
+
+									createTask(curDistance,curMode,curEmissions);
 									setOpened(false);
-									totalEmissions += calculateEmissions(document.getElementById("vehicles").value,document.getElementById("dTravelled").value);
+									totalEmissions += curEmissions;
 								}}>
 								Create Trip
 							</Button>
@@ -167,7 +188,7 @@ export default function App() {
 								My Trips
 							</Title>
 							<Text size={'lg'} mt={'md'} color={'dimmed'}>
-								Total emissions: {totalEmissions}
+								Total emissions: {totalEmissions} lbs/mile
 							</Text>
 							<ActionIcon
 								color={'blue'}
@@ -187,21 +208,21 @@ export default function App() {
 										<Card withBorder key={index} mt={'sm'}>
 											<Group position={'apart'}>
 												<Text weight={'bold'}>{task.title}</Text>
+												<div>
+													<Text color={'dimmed'} size={'md'} mt={'sm'}>{task.emissionsSummary}</Text>
+													<Text color={'dimmed'} size={'md'} mt={'sm'}>{task.distanceSummary}</Text>
+													<Text color={'dimmed'} size={'md'} mt={'sm'}>{task.modeSummary}</Text>
+												</div>
 												<ActionIcon
 													onClick={() => {
 														deleteTask(index);
-														totalEmissions -= 10;
+														totalEmissions -= task.tripEmissions;
 													}}
 													color={'red'}
 													variant={'transparent'}>
 													<Trash />
 												</ActionIcon>
 											</Group>
-											<Text color={'dimmed'} size={'md'} mt={'sm'}>
-												{task.summary
-													? task.summary
-													: 'No summary was provided for this task'}
-											</Text>
 										</Card>
 									);
 								}
