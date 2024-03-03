@@ -21,6 +21,8 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
+let totalEmissions = 0;
+
 const emissions = {
 	"wb": 0.053,
 	"scooter": 0.24,
@@ -141,6 +143,7 @@ export default function App() {
 								onClick={() => {
 									createTask();
 									setOpened(false);
+									totalEmissions += 10;
 								}}>
 								Create Task
 							</Button>
@@ -154,8 +157,10 @@ export default function App() {
 									fontWeight: 900,
 								})}>
 								My Tasks
-								{test}
 							</Title>
+							<Text size={'lg'} mt={'md'} color={'dimmed'}>
+								Total emissions: {totalEmissions}
+							</Text>
 							<ActionIcon
 								color={'blue'}
 								onClick={() => toggleColorScheme()}
@@ -177,6 +182,7 @@ export default function App() {
 												<ActionIcon
 													onClick={() => {
 														deleteTask(index);
+														totalEmissions -= 10;
 													}}
 													color={'red'}
 													variant={'transparent'}>
