@@ -21,6 +21,19 @@ import {
 import { useColorScheme } from '@mantine/hooks';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
+const emissions = {
+	"wb": 0.053,
+	"scooter": 0.24,
+	"bus": 0.64,
+	"car": 0.76
+};
+
+function calculateEmissions(vehicle,distance) {
+	return emissions[vehicle] * distance;
+} 
+
+const test = calculateEmissions("car", 100);
+
 export default function App() {
 	const [tasks, setTasks] = useState([]);
 	const [opened, setOpened] = useState(false);
@@ -38,17 +51,6 @@ export default function App() {
 
 	const taskTitle = useRef('');
 	const taskSummary = useRef('');
-
-	const emissions = {
-		"wb": 0.053,
-		"scooter": 0.24,
-		"bus": 0.64,
-		"car": 0.76
-	};
-
-	function calculateEmissions(vehicle,distance) {
-		return emissions[vehicle] * distance;
-	} 
 
 	function createTask() {
 		setTasks([
@@ -152,6 +154,7 @@ export default function App() {
 									fontWeight: 900,
 								})}>
 								My Tasks
+								{test}
 							</Title>
 							<ActionIcon
 								color={'blue'}
