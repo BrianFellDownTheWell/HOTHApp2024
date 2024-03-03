@@ -12,6 +12,7 @@ import {
 } from '@mantine/core';
 import { useState, useRef, useEffect } from 'react';
 import { MoonStars, Sun, Trash } from 'tabler-icons-react';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 import {
 	MantineProvider,
@@ -22,6 +23,7 @@ import { useColorScheme } from '@mantine/hooks';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
 let totalEmissions = 0;
+let curEmissions = 0;
 
 const emissions = {
 	"wb": 0.053,
@@ -53,6 +55,9 @@ export default function App() {
 
 	const taskTitle = useRef('');
 	const taskSummary = useRef('');
+
+	const tripDistance = useRef('');
+	const transportMode = useRef('');
 
 	function createTask() {
 		setTasks([
@@ -112,25 +117,28 @@ export default function App() {
 					<Modal
 						opened={opened}
 						size={'md'}
-						title={'New Task'}
+						title={'New Trip'}
 						withCloseButton={false}
 						onClose={() => {
 							setOpened(false);
 						}}
 						centered>
 						<TextInput
+							id="dTravelled"
 							mt={'md'}
 							ref={taskTitle}
-							placeholder={'Task Title'}
+							placeholder={'Distance Travelled'}
 							required
-							label={'Title'}
+							label={'Distance'}
 						/>
-						<TextInput
-							ref={taskSummary}
-							mt={'md'}
-							placeholder={'Task Summary'}
-							label={'Summary'}
-						/>
+						<label for="vehicles">Mode of Transport</label>
+
+						<select name="vehicles" id="vehicles">
+							<option value="wb">Walking/Bicycle</option>
+							<option value="scooter">E-Scooter</option>
+							<option value="bus">Bus</option>
+							<option value="car">Car</option>
+						</select>
 						<Group mt={'md'} position={'apart'}>
 							<Button
 								onClick={() => {
@@ -143,9 +151,9 @@ export default function App() {
 								onClick={() => {
 									createTask();
 									setOpened(false);
-									totalEmissions += 10;
+									totalEmissions += calculateEmissions(document.getElementById("vehicles").value,document.getElementById("dTravelled").value);
 								}}>
-								Create Task
+								Create Trip
 							</Button>
 						</Group>
 					</Modal>
@@ -156,7 +164,7 @@ export default function App() {
 									fontFamily: `Greycliff CF, ${theme.fontFamily}`,
 									fontWeight: 900,
 								})}>
-								My Tasks
+								My Trips
 							</Title>
 							<Text size={'lg'} mt={'md'} color={'dimmed'}>
 								Total emissions: {totalEmissions}
@@ -200,7 +208,7 @@ export default function App() {
 							})
 						) : (
 							<Text size={'lg'} mt={'md'} color={'dimmed'}>
-								You have no tasks
+								You have no trips
 							</Text>
 						)}
 						<Button
@@ -209,7 +217,7 @@ export default function App() {
 							}}
 							fullWidth
 							mt={'md'}>
-							New Task
+							New Trip
 						</Button>
 					</Container>
 				</div>
