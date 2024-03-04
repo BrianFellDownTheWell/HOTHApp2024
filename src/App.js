@@ -9,6 +9,7 @@ import {
 	Card,
 	ActionIcon,
 	Code,
+	Stack
 } from '@mantine/core';
 import { useState, useRef, useEffect } from 'react';
 import { MoonStars, Sun, Trash } from 'tabler-icons-react';
@@ -169,17 +170,23 @@ export default function App() {
 							placeholder={'Shortly describe your trip'}
 							label={'Trip title'}
 						/>
-						<div>
-							<label for="vehicles">Mode of Transport </label>
-						</div>
-						<div>
+						<Stack
+							mih={50}
+							mt={'md'}
+							>
+
+							<Text 
+								size='sm' 
+								fw={500}
+								> Mode of Transport </Text>
+
 							<select name="vehicles" id="vehicles">
 								<option value="wb">Walking/Bicycle</option>
 								<option value="scooter">E-Scooter</option>
 								<option value="bus">Bus</option>
 								<option value="car">Car</option>
 							</select>
-						</div>
+						</Stack>
 
 						<Group mt={'md'} position={'apart'}>
 							<Button
