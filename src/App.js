@@ -143,10 +143,11 @@ export default function App() {
 							id="dTravelled"
 							mt={'md'}
 							ref={taskTitle}
-							placeholder={'Distance Travelled'}
+							placeholder={'Miles Travelled'}
 							required
 							label={'Distance'}
 						/>
+						<span id='inputError'></span>
 						<label for="vehicles">Mode of Transport</label>
 
 						<select name="vehicles" id="vehicles">
@@ -165,14 +166,20 @@ export default function App() {
 							</Button>
 							<Button
 								onClick={() => {
+									let error = document.getElementById('inputError');
 									let dropDown = document.getElementById("vehicles");
 									curDistance = document.getElementById("dTravelled").value;
-									curMode = dropDown.options[dropDown.selectedIndex].text;
-									curEmissions = calculateEmissions(dropDown.value,curDistance);
-
-									createTask(curDistance,curMode,curEmissions);
-									setOpened(false);
-									totalEmissions += curEmissions;
+									if(!isNaN(parseFloat(curDistance)) && curDistance >= 0){ 
+										curMode = dropDown.options[dropDown.selectedIndex].text;
+										curEmissions = calculateEmissions(dropDown.value,curDistance);
+										createTask(curDistance,curMode,curEmissions);
+										setOpened(false);
+										totalEmissions += curEmissions;	
+										error.innerHTML = '';
+									}
+									else{
+										error.innerHTML = 'Error: Input distance must be a nonnegative number.\n'
+									}
 								}}>
 								Create Trip
 							</Button>
@@ -188,7 +195,7 @@ export default function App() {
 								My Trips
 							</Title>
 							<Text size={'lg'} mt={'md'} color={'dimmed'}>
-								Total emissions: {totalEmissions} lbs/mile
+								Total emissions: {parseInt(totalEmissions)} lbs/mile
 							</Text>
 							<ActionIcon
 								color={'blue'}
@@ -215,8 +222,8 @@ export default function App() {
 												</div>
 												<ActionIcon
 													onClick={() => {
-														deleteTask(index);
 														totalEmissions -= task.tripEmissions;
+														deleteTask(index);
 													}}
 													color={'red'}
 													variant={'transparent'}>
