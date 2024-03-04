@@ -33,16 +33,16 @@ const emissions = {
 	"car": 0.75
 };
 
+function updateEmissions(tasks) {
+	for (let i = 0; i < tasks.length; i++){
+			var curTrip = tasks[i];
+			totalEmissions += curTrip.tripEmissions;
+	}
+}
+
 function calculateEmissions(vehicle,distance) {
 	return emissions[vehicle] * distance;
 } 
-
-function updateEmissions(tasks) {
-	for (let i = 0; i < tasks.length; i++){
-		var curTrip = tasks[i];
-		totalEmissions += curTrip.tripEmissions;
-	}
-}
 
 const test = calculateEmissions("car", 100);
 
@@ -95,8 +95,7 @@ export default function App() {
 				distanceSummary: "Distance travelled: " + curDistance + " miles", 
 				modeSummary: "Mode of Transport: " + curMode,
 			},
-		],
-		);
+		]);
 	}
 
 	function deleteTask(index) {
@@ -111,6 +110,8 @@ export default function App() {
 
 	function loadTasks() {
 		let loadedTasks = localStorage.getItem('tasks');
+
+		let tasks = JSON.parse(loadedTasks);
 
 		if (loadedTasks) {
 			let tasks = JSON.parse(loadedTasks);
@@ -154,11 +155,10 @@ export default function App() {
 							id="dTravelled"
 							mt={'md'}
 							ref={taskTitle}
-							placeholder={'Miles Travelled'}
+							placeholder={'Distance Travelled, in Miles'}
 							required
 							label={'Distance'}
 						/>
-						<span id='inputError'></span>
 						<label for="vehicles">Mode of Transport</label>
 
 						<select name="vehicles" id="vehicles">
@@ -167,6 +167,8 @@ export default function App() {
 							<option value="bus">Bus</option>
 							<option value="car">Car</option>
 						</select>
+
+						<span id="errorText"></span>
 						<Group mt={'md'} position={'apart'}>
 							<Button
 								onClick={() => {
@@ -177,21 +179,23 @@ export default function App() {
 							</Button>
 							<Button
 								onClick={() => {
-									let error = document.getElementById('inputError');
 									let dropDown = document.getElementById("vehicles");
 									curDistance = document.getElementById("dTravelled").value;
-									if(!isNaN(parseFloat(curDistance)) && curDistance >= 0){ 
-										curMode = dropDown.options[dropDown.selectedIndex].text;
-										curEmissions = calculateEmissions(dropDown.value,curDistance);
+									curMode = dropDown.options[dropDown.selectedIndex].text;
+									curEmissions = calculateEmissions(dropDown.value,curDistance);
+
+									if(curDistance < 0 ||  isNaN(curDistance)) {
+										alert("Enter a valid distance!");
+									}
+
+									else {
 										createTask(curDistance,curMode,curEmissions);
 										setOpened(false);
-										totalEmissions += curEmissions;	
-										error.innerHTML = '';
+										totalEmissions += curEmissions;
 									}
-									else{
-										error.innerHTML = 'Error: Input distance must be a nonnegative number.\n'
+
 									}
-								}}>
+								}>
 								Create Trip
 							</Button>
 						</Group>
@@ -206,7 +210,7 @@ export default function App() {
 								My Trips
 							</Title>
 							<Text size={'lg'} mt={'md'} color={'dimmed'}>
-								Total emissions: {parseInt(totalEmissions)} lbs/mile
+								Total emissions: {totalEmissions} lbs/mile
 							</Text>
 							<ActionIcon
 								color={'blue'}
@@ -233,8 +237,8 @@ export default function App() {
 												</div>
 												<ActionIcon
 													onClick={() => {
-														totalEmissions -= task.tripEmissions;
 														deleteTask(index);
+														totalEmissions -= task.tripEmissions;
 													}}
 													color={'red'}
 													variant={'transparent'}>
