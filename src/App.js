@@ -21,6 +21,7 @@ import { useColorScheme } from '@mantine/hooks';
 import { useHotkeys, useLocalStorage } from '@mantine/hooks';
 
 let totalEmissions = 0;
+//let totalRoundedEmissions = 0;
 
 let curMode = "";
 let curDistance = 0;
@@ -175,6 +176,7 @@ export default function App() {
 										createTask(curDistance,curMode,curEmissions);
 										setOpened(false);
 										totalEmissions += curEmissions;	
+										//totalRoundedEmissions = parseInt(totalEmissions);
 										error.innerHTML = '';
 									}
 									else{
@@ -194,7 +196,8 @@ export default function App() {
 								})}>
 								My Trips
 							</Title>
-							<Text size={'lg'} mt={'md'} color={'dimmed'}>
+							<Text size={'lg'} mt={'md'} color={'dimmed'} id = 'printEmissions'>
+
 								Total emissions: {parseInt(totalEmissions)} lbs/mile
 							</Text>
 							<ActionIcon
@@ -223,6 +226,9 @@ export default function App() {
 												<ActionIcon
 													onClick={() => {
 														totalEmissions -= task.tripEmissions;
+														if(totalEmissions < 0){
+															totalEmissions = 0;
+														}
 														deleteTask(index);
 													}}
 													color={'red'}
