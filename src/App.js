@@ -35,9 +35,9 @@ const emissions = {
 	"car": 0.75
 };
 
-function updateEmissions(tasks) {
-	for (let i = 0; i < tasks.length; i++){
-			var curTrip = tasks[i];
+function updateEmissions(trips) {
+	for (let i = 0; i < trips.length; i++){
+			var curTrip = trips[i];
 			totalEmissions += curTrip.tripEmissions;
 	}
 }
@@ -49,7 +49,7 @@ function calculateEmissions(vehicle,distance) {
 const test = calculateEmissions("car", 100);
 
 export default function App() {
-	const [tasks, setTasks] = useState([]);
+	const [trips, setTrips] = useState([]);
 	const [opened, setOpened] = useState(false);
 
 	const preferredColorScheme = useColorScheme();
@@ -63,17 +63,14 @@ export default function App() {
 
 	useHotkeys([['mod+J', () => toggleColorScheme()]]);
 
-	const taskTitle = useRef('');
-	const taskSummary = useRef('');
-
 	const tripDistance = useRef('');
 	const transportMode = useRef('');
 	const tripEmissions = useRef('');
 	const tripTitle = useRef('');
 
-	function createTask(curDistance,curMode,curEmissions, curTitle) {
-		setTasks([
-			...tasks,
+	function createTrip(curDistance,curMode,curEmissions, curTitle) {
+		setTrips([
+			...trips,
 			{
 				tripDistance: curDistance,
 				transportMode: curMode,
@@ -87,8 +84,8 @@ export default function App() {
 			},
 		]);
 
-		saveTasks([
-			...tasks,
+		saveTrips([
+			...trips,
 			{
 				tripDistance: curDistance,
 				transportMode: curMode,
@@ -103,39 +100,39 @@ export default function App() {
 		]);
 	}
 
-	function deleteTask(index) {
-		var clonedTasks = [...tasks];
+	function deleteTrip(index) {
+		var clonedTrips = [...trips];
 
-		clonedTasks.splice(index, 1);
+		clonedTrips.splice(index, 1);
 
-		setTasks(clonedTasks);
+		setTrips(clonedTrips);
 
-		saveTasks([...clonedTasks]);
+		saveTrips([...clonedTrips]);
 	}
 
-	function loadTasks() {
-		let loadedTasks = localStorage.getItem('tasks');
+	function loadTrips() {
+		let loadedTrips = localStorage.getItem('trips');
 
-		let tasks = JSON.parse(loadedTasks);
+		let trips = JSON.parse(loadedTrips);
 
-		if (loadedTasks) {
-			let tasks = JSON.parse(loadedTasks);
-			setTasks(tasks);
-			// console.log(tasks);
-			// console.log(tasks[0].tripEmissions);
-			// console.log(tasks[1].tripEmissions);
-			// console.log(tasks[2].tripEmissions);
-			updateEmissions(tasks);
+		if (loadedTrips) {
+			let trips = JSON.parse(loadedTrips);
+			setTrips(trips);
+			// console.log(trips);
+			// console.log(trips[0].tripEmissions);
+			// console.log(trips[1].tripEmissions);
+			// console.log(trips[2].tripEmissions);
+			updateEmissions(trips);
 			// console.log(totalEmissions);
 		}
 	}
 
-	function saveTasks(tasks) {
-		localStorage.setItem('tasks', JSON.stringify(tasks));
+	function saveTrips(trips) {
+		localStorage.setItem('trips', JSON.stringify(trips));
 	}
 
 	useEffect(() => {
-		loadTasks();
+		loadTrips();
 	}, []);
 
 	return (
@@ -159,7 +156,7 @@ export default function App() {
 						<TextInput
 							id="dTravelled"
 							mt={'md'}
-							ref={taskTitle}
+							ref={tripTitle}
 							placeholder={'Distance Travelled, in Miles'}
 							label={'Distance'}
 						/>
@@ -205,16 +202,18 @@ export default function App() {
 									curEmissions = calculateEmissions(dropDown.value,curDistance);
 									curTitle = document.getElementById("tripTitle").value;
 
-									if(curDistance < 0 ||  isNaN(curDistance) || curDistance == "") {
-										alert("Enter a valid distance!");
-									}
-
-									if(curTitle == "") {
-										alert("Enter a Trip Title!");
+									if(curDistance < 0 ||  isNaN(curDistance) || curDistance == "" || curTitle == "") {
+										if(curDistance < 0 ||  isNaN(curDistance) || curDistance == "") {
+											alert("Enter a valid distance!");
+										}
+	
+										if(curTitle == "") {
+											alert("Enter a Trip Title!");
+										}
 									}
 
 									else {
-										createTask(curDistance,curMode,curEmissions, curTitle);
+										createTrip(curDistance,curMode,curEmissions, curTitle);
 										setOpened(false);
 										totalEmissions += curEmissions;
 									}
@@ -250,22 +249,22 @@ export default function App() {
 								)}
 							</ActionIcon>
 						</Group>
-						{tasks.length > 0 ? (
-							tasks.map((task, index) => {
-								if (task.title) {
+						{trips.length > 0 ? (
+							trips.map((trip, index) => {
+								if (trip.title) {
 									return (
 										<Card withBorder key={index} mt={'sm'}>
 											<Group position={'apart'}>
-												<Text weight={'bold'}>{task.title}</Text>
+												<Text weight={'bold'}>{trip.title}</Text>
 												<div>
-													<Text color={'dimmed'} size={'md'} mt={'sm'}>{task.emissionsSummary}</Text>
-													<Text color={'dimmed'} size={'md'} mt={'sm'}>{task.distanceSummary}</Text>
-													<Text color={'dimmed'} size={'md'} mt={'sm'}>{task.modeSummary}</Text>
+													<Text color={'dimmed'} size={'md'} mt={'sm'}>{trip.emissionsSummary}</Text>
+													<Text color={'dimmed'} size={'md'} mt={'sm'}>{trip.distanceSummary}</Text>
+													<Text color={'dimmed'} size={'md'} mt={'sm'}>{trip.modeSummary}</Text>
 												</div>
 												<ActionIcon
 													onClick={() => {
-														deleteTask(index);
-														totalEmissions -= task.tripEmissions;
+														deleteTrip(index);
+														totalEmissions -= trip.tripEmissions;
 													}}
 													color={'red'}
 													variant={'transparent'}>
