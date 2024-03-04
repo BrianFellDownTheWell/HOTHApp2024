@@ -25,6 +25,7 @@ let totalEmissions = 0;
 let curMode = "";
 let curDistance = 0;
 let curEmissions = 0;
+let curTitle = "";
 
 const emissions = {
 	"wb": 0.05,
@@ -67,16 +68,18 @@ export default function App() {
 	const tripDistance = useRef('');
 	const transportMode = useRef('');
 	const tripEmissions = useRef('');
+	const tripTitle = useRef('');
 
-	function createTask(curDistance,curMode,curEmissions) {
+	function createTask(curDistance,curMode,curEmissions, curTitle) {
 		setTasks([
 			...tasks,
 			{
 				tripDistance: curDistance,
 				transportMode: curMode,
 				tripEmissions: curEmissions,
+				tripTitle: curTitle,
 
-				title: "Trip - ",
+				title: curTitle,
 				emissionsSummary: "CO2 emissions: " + curEmissions + " lbs",
 				distanceSummary: "Distance travelled: " + curDistance + " miles", 
 				modeSummary: "Mode of Transport: " + curMode,
@@ -89,8 +92,9 @@ export default function App() {
 				tripDistance: curDistance,
 				transportMode: curMode,
 				tripEmissions: curEmissions,
+				tripTitle: curTitle,
 
-				title: "Trip - ",
+				title: curTitle,
 				emissionsSummary: "CO2 emissions: " + curEmissions + " lbs",
 				distanceSummary: "Distance travelled: " + curDistance + " miles", 
 				modeSummary: "Mode of Transport: " + curMode,
@@ -158,6 +162,13 @@ export default function App() {
 							placeholder={'Distance Travelled, in Miles'}
 							label={'Distance'}
 						/>
+						<TextInput
+							id="tripTitle"
+							mt={'md'}
+							ref={tripTitle}
+							placeholder={'Shortly describe your trip'}
+							label={'Trip title'}
+						/>
 						<div>
 							<label for="vehicles">Mode of Transport </label>
 						</div>
@@ -170,13 +181,13 @@ export default function App() {
 							</select>
 						</div>
 
-						<span id="errorText"></span>
 						<Group mt={'md'} position={'apart'}>
 							<Button
 								onClick={() => {
 									setOpened(false);
 								}}
-								variant={'subtle'}>
+								variant={'subtle'}
+								color="green">
 								Cancel
 							</Button>
 							<Button
@@ -185,19 +196,26 @@ export default function App() {
 									curDistance = document.getElementById("dTravelled").value;
 									curMode = dropDown.options[dropDown.selectedIndex].text;
 									curEmissions = calculateEmissions(dropDown.value,curDistance);
+									curTitle = document.getElementById("tripTitle").value;
 
 									if(curDistance < 0 ||  isNaN(curDistance) || curDistance == "") {
 										alert("Enter a valid distance!");
 									}
 
+									if(curTitle == "") {
+										alert("Enter a Trip Title!");
+									}
+
 									else {
-										createTask(curDistance,curMode,curEmissions);
+										createTask(curDistance,curMode,curEmissions, curTitle);
 										setOpened(false);
 										totalEmissions += curEmissions;
 									}
 
 									}
-								}>
+								
+								}
+								color="green">
 								Create Trip
 							</Button>
 						</Group>
@@ -261,7 +279,8 @@ export default function App() {
 								setOpened(true);
 							}}
 							fullWidth
-							mt={'md'}>
+							mt={'md'}
+							color="green">
 							New Trip
 						</Button>
 					</Container>
