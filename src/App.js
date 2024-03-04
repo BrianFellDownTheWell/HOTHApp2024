@@ -156,17 +156,19 @@ export default function App() {
 							mt={'md'}
 							ref={taskTitle}
 							placeholder={'Distance Travelled, in Miles'}
-							required
 							label={'Distance'}
 						/>
-						<label for="vehicles">Mode of Transport</label>
-
-						<select name="vehicles" id="vehicles">
-							<option value="wb">Walking/Bicycle</option>
-							<option value="scooter">E-Scooter</option>
-							<option value="bus">Bus</option>
-							<option value="car">Car</option>
-						</select>
+						<div>
+							<label for="vehicles">Mode of Transport </label>
+						</div>
+						<div>
+							<select name="vehicles" id="vehicles">
+								<option value="wb">Walking/Bicycle</option>
+								<option value="scooter">E-Scooter</option>
+								<option value="bus">Bus</option>
+								<option value="car">Car</option>
+							</select>
+						</div>
 
 						<span id="errorText"></span>
 						<Group mt={'md'} position={'apart'}>
@@ -184,7 +186,7 @@ export default function App() {
 									curMode = dropDown.options[dropDown.selectedIndex].text;
 									curEmissions = calculateEmissions(dropDown.value,curDistance);
 
-									if(curDistance < 0 ||  isNaN(curDistance)) {
+									if(curDistance < 0 ||  isNaN(curDistance) || curDistance == "") {
 										alert("Enter a valid distance!");
 									}
 
@@ -210,7 +212,7 @@ export default function App() {
 								My Trips
 							</Title>
 							<Text size={'lg'} mt={'md'} color={'dimmed'}>
-								Total emissions: {totalEmissions} lbs/mile
+								Total emissions: {totalEmissions} lbs
 							</Text>
 							<ActionIcon
 								color={'blue'}
