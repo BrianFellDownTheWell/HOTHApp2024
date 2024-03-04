@@ -33,11 +33,16 @@ const emissions = {
 	"car": 0.75
 };
 
-let trips = {};
-
 function calculateEmissions(vehicle,distance) {
 	return emissions[vehicle] * distance;
 } 
+
+function updateEmissions(tasks) {
+	for (let i = 0; i < tasks.length; i++){
+		var curTrip = tasks[i];
+		totalEmissions += curTrip.tripEmissions;
+	}
+}
 
 const test = calculateEmissions("car", 100);
 
@@ -85,12 +90,13 @@ export default function App() {
 				transportMode: curMode,
 				tripEmissions: curEmissions,
 
-
-
-				title: "Trip - CO2 emissions: " + curEmissions + "Distance: " + curDistance + "Mode of Transport: " + curMode,
-				summary: "Distance: " + curDistance + "Mode of Transport: " + curMode,
+				title: "Trip - ",
+				emissionsSummary: "CO2 emissions: " + curEmissions + " lbs",
+				distanceSummary: "Distance travelled: " + curDistance + " miles", 
+				modeSummary: "Mode of Transport: " + curMode,
 			},
-		]);
+		],
+		);
 	}
 
 	function deleteTask(index) {
@@ -106,10 +112,15 @@ export default function App() {
 	function loadTasks() {
 		let loadedTasks = localStorage.getItem('tasks');
 
-		let tasks = JSON.parse(loadedTasks);
-
-		if (tasks) {
+		if (loadedTasks) {
+			let tasks = JSON.parse(loadedTasks);
 			setTasks(tasks);
+			// console.log(tasks);
+			// console.log(tasks[0].tripEmissions);
+			// console.log(tasks[1].tripEmissions);
+			// console.log(tasks[2].tripEmissions);
+			updateEmissions(tasks);
+			// console.log(totalEmissions);
 		}
 	}
 
